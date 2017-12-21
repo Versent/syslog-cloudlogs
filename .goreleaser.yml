@@ -1,0 +1,12 @@
+
+build:
+  main: cmd/syslog-cloudlogs/main.go
+  binary: /syslog-cloudlogs
+  goos:
+    - darwin
+    - linux
+    - windows
+  goarch:
+    - amd64
+  # dockers:
+  #   - image: versent/syslog-cloudlogs
