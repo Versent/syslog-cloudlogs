@@ -8,5 +8,7 @@ build:
     - windows
   goarch:
     - amd64
-  dockers:
-    - image: versent/syslog-cloudlogs
+dockers:
+  - image: versent/syslog-cloudlogs
+    latest: true
+    tag_template: '{{ .Tag }}'  
