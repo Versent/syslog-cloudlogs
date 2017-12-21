@@ -1,6 +1,6 @@
 # syslog-cloudlogs
 
-This service acts as a bridge from syslog (TLS) to cloud based logging services such as AWS cloudwatch logs and is primarily designed to enable integration of apigee logging with these services.
+This service acts as a bridge from syslog to cloud based logging services such as AWS cloudwatch logs and is primarily designed to enable integration of apigee logging with these services.
 
 # features
 
@@ -46,4 +46,4 @@ Things which need some work:
 
 # License
 
-This software is copyright Versent 2017
+This code is released under MIT License.

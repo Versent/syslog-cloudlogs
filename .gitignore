@@ -5,3 +5,4 @@ console.log
 trace.out
 syslog-cloudlogs
 node_modules
+dist
