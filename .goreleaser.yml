@@ -11,4 +11,3 @@ build:
 dockers:
   - image: versent/syslog-cloudlogs
     latest: true
-    tag_template: '{{ .Tag }}'  
