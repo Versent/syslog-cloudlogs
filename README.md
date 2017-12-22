@@ -24,6 +24,29 @@ export SYSLOG_KEY=XXX
 export AWS_REGION=ap-southeast-2
 ```
 
+# Generate self-signed certificates
+
+CloudFlare's distributes [cfssl](https://github.com/cloudflare/cfssl) source code on github page and binaries on cfssl website.
+
+Our documentation assumes that you will run cfssl on your local x86_64 Linux or OSX host.
+
+
+```
+curl -s -L -o /usr/local/bin/cfssl https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+curl -s -L -o /usr/local/bin/cfssljson https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+chmod +x /usr/local/bin/{cfssl,cfssljson}
+```
+
+Initialize a certificate authority
+First of all we have to save default cfssl options for future substitutions:
+
+```
+mkdir ~/cfssl
+cd ~/cfssl
+cfssl print-defaults config > ca-config.json
+cfssl print-defaults csr > ca-csr.json
+```
+
 # certificates
 
 Run the following code to produce a string from a PEM encoded certificate, this can then be exported in `SYSLOG_CERT` environment variable.
