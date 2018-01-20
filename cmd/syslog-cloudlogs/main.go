@@ -75,7 +75,7 @@ func setupTLSListener(conf *config.SyslogConfig, server *syslog.Server) error {
 	}
 
 	config := &tls.Config{Certificates: []tls.Certificate{cert}}
-	addr := fmt.Sprintf("localhost:%v", conf.Port)
+	addr := fmt.Sprintf(":%v", conf.Port)
 
 	err = server.ListenTCPTLS(addr, config)
 	if err != nil {
