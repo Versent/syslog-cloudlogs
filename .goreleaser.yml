@@ -15,9 +15,5 @@ fpm:
   homepage: https://github.com/versent/syslog-cloudlogs
   license: MIT
   formats:
-    - deb
     - rpm
   bindir: /usr/bin
-  files:
-    "scripts/etc/systemd/system": "/etc/systemd/system"
-    "scripts/etc/syslog-cloudlogs": "/etc/syslog-cloudlogs"
