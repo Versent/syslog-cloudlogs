@@ -1,0 +1,11 @@
+[Unit]
+Description=Versent Syslog Service
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/syslog-cloudlogs/syslog-cloudlogs.env
+ExecStart=/usr/bin/syslog-cloudlogs
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
