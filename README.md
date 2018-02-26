@@ -6,6 +6,7 @@ This service acts as a bridge from syslog to cloud based logging services such a
 
 * TLS+syslog listener
 * Batched upload to AWS cloudwatch logs
+* support for [AWS NLB proxy protocol v2](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol)
 
 # configuration
 
@@ -22,6 +23,8 @@ export SYSLOG_CERT=XXX
 export SYSLOG_KEY=XXX
 # AWS region
 export AWS_REGION=ap-southeast-2
+# Enable proxy protocol v2 support for NLB
+export SYSLOG_PROXY=true
 ```
 
 # Generate self-signed certificates
