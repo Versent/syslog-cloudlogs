@@ -3,9 +3,8 @@ package batching
 import (
 	"time"
 
-	"github.com/apex/log"
 	"github.com/sirupsen/logrus"
-	syslog "gopkg.in/mcuadros/go-syslog.v2"
+	syslog "github.com/wolfeidau/go-syslog"
 )
 
 // DispatchFunc invoked when a batch is ready to send
@@ -53,7 +52,7 @@ func (b *Batcher) Handler(channel syslog.LogPartsChannel) {
 			}
 
 			if b.willOverflow(len(entry.Message)) {
-				log.Debugf("Batch flushed to prevent size overflow - size: %d, capacity: %v", b.size, b.capacity)
+				logrus.Debugf("Batch flushed to prevent size overflow - size: %d, capacity: %v", b.size, b.capacity)
 				b.flush()
 			}
 
@@ -66,7 +65,7 @@ func (b *Batcher) Handler(channel syslog.LogPartsChannel) {
 			}
 
 		case <-b.flushTimer.C:
-			log.Debugf("Batch flushed due to timer - length: %v", len(b.records))
+			logrus.Debugf("Batch flushed due to timer - length: %v", len(b.records))
 			b.flush()
 		}
 	}
