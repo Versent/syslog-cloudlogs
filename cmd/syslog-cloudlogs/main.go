@@ -11,7 +11,7 @@ import (
 	"github.com/versent/syslog-cloudlogs/pkg/batching"
 	"github.com/versent/syslog-cloudlogs/pkg/config"
 	"github.com/versent/syslog-cloudlogs/pkg/cwlogs"
-	syslog "gopkg.in/mcuadros/go-syslog.v2"
+	syslog "github.com/wolfeidau/go-syslog"
 )
 
 const (
@@ -77,10 +77,20 @@ func setupTLSListener(conf *config.SyslogConfig, server *syslog.Server) error {
 	config := &tls.Config{Certificates: []tls.Certificate{cert}}
 	addr := fmt.Sprintf(":%v", conf.Port)
 
-	err = server.ListenTCPTLS(addr, config)
+	ln, err := tls.Listen("tcp", addr, config)
+	if err != nil {
+		return errors.Wrap(err, "failed to create TLS listener")
+	}
+
+	err = server.Listen(ln)
 	if err != nil {
 		return errors.Wrap(err, "failed to start TLS listener")
 	}
+
+	// err = server.ListenTCPTLS(addr, config)
+	// if err != nil {
+	// 	return errors.Wrap(err, "failed to start TLS listener")
+	// }
 
 	logrus.WithField("addr", addr).Info("TLS listen")
 

@@ -6,18 +6,17 @@ GO ?= go
 
 # Install all the build and lint dependencies
 setup:
-	go get -u github.com/alecthomas/gometalinter
-	go get -u github.com/golang/dep/cmd/dep
-	go get -u github.com/pierrre/gotestcover
-	go get -u golang.org/x/tools/cmd/cover
-	go get github.com/vektra/mockery/...
-	gometalinter --install
-	dep ensure
+	@$(GO) get -u github.com/alecthomas/gometalinter
+	@$(GO) get -u github.com/golang/dep/cmd/dep
+	@$(GO) get -u github.com/pierrre/gotestcover
+	@$(GO) get -u golang.org/x/tools/cmd/cover
+	@gometalinter --install
+	@dep ensure
 .PHONY: setup
 
 # Install from source.
 install:
-	@echo "==> Installing up ${GOPATH}/bin/kinesis-tail"
+	@echo "==> Installing up ${GOPATH}/bin/syslog-cloudlogs"
 	@$(GO) install ./...
 .PHONY: install
 
@@ -33,7 +32,7 @@ cover: test
 
 # Run all the linters
 lint:
-	gometalinter --vendor ./...
+	@gometalinter --vendor ./...
 .PHONY: lint
 
 # Run all the tests and code checks
@@ -46,7 +45,3 @@ release:
 	@goreleaser -p 1 --rm-dist -config .goreleaser.yml
 	@echo "==> Complete"
 .PHONY: release
-
-generate-mocks:
-	mockery -dir ../../aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface --all
-.PHONY: generate-mocks

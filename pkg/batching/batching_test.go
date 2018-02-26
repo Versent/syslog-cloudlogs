@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	syslog "gopkg.in/mcuadros/go-syslog.v2"
-	"gopkg.in/mcuadros/go-syslog.v2/format"
+	syslog "github.com/wolfeidau/go-syslog"
+	"github.com/wolfeidau/go-syslog/format"
 )
 
 func Test_WhenNotFull(t *testing.T) {
