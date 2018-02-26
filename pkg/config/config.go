@@ -11,6 +11,7 @@ import (
 // SyslogConfig syslog server configuration
 type SyslogConfig struct {
 	Debug   bool
+	Proxy   bool
 	Port    int `validate:"nonzero"`
 	Region  string
 	Profile string

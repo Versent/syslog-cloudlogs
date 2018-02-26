@@ -1,3 +1,4 @@
+export SYSLOG_PROXY=true
 export SYSLOG_PORT=10514
 export SYSLOG_GROUP=/versent/dev/syslog
 export SYSLOG_STREAM=apigee

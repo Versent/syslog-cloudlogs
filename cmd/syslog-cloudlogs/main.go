@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
+	"net"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
@@ -12,6 +13,7 @@ import (
 	"github.com/versent/syslog-cloudlogs/pkg/config"
 	"github.com/versent/syslog-cloudlogs/pkg/cwlogs"
 	syslog "github.com/wolfeidau/go-syslog"
+	"github.com/wolfeidau/proxyv2"
 )
 
 const (
@@ -21,6 +23,8 @@ const (
 
 func main() {
 	var c config.SyslogConfig
+
+	logrus.SetFormatter(&logrus.JSONFormatter{})
 
 	err := envconfig.Process("syslog", &c)
 	if err != nil {
@@ -69,34 +73,77 @@ func main() {
 
 func setupTLSListener(conf *config.SyslogConfig, server *syslog.Server) error {
 
+	ln, err := buildListener(conf)
+	if err != nil {
+		return errors.Wrap(err, "failed to create listener")
+	}
+
 	cert, err := conf.Certificate()
 	if err != nil {
 		return errors.Wrap(err, "failed to build certs from configuration")
 	}
 
 	config := &tls.Config{Certificates: []tls.Certificate{cert}}
-	addr := fmt.Sprintf(":%v", conf.Port)
 
-	ln, err := tls.Listen("tcp", addr, config)
-	if err != nil {
-		return errors.Wrap(err, "failed to create TLS listener")
-	}
+	tlsLn := tls.NewListener(ln, config)
 
-	err = server.Listen(ln)
+	err = server.Listen(tlsLn)
 	if err != nil {
 		return errors.Wrap(err, "failed to start TLS listener")
 	}
 
-	// err = server.ListenTCPTLS(addr, config)
-	// if err != nil {
-	// 	return errors.Wrap(err, "failed to start TLS listener")
-	// }
+	return nil
+}
+
+func buildListener(conf *config.SyslogConfig) (net.Listener, error) {
+
+	addr := fmt.Sprintf(":%v", conf.Port)
+
+	ln, err := net.Listen("tcp", addr)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create TCP listener")
+	}
 
 	logrus.WithField("addr", addr).Info("TLS listen")
 
-	return nil
+	// if we aren't proxying just return ln
+	if !conf.Proxy {
+		return ln, nil
+	}
+
+	proxyLn, err := proxyv2.NewListener(ln, &proxyv2.Config{
+		Trace:            traceProxyHeaders,
+		ProxyHeaderError: proxyHeaderError,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create proxy listener")
+	}
+
+	return proxyLn, nil
 }
 
 func tlsPeerFunc(tlsConn *tls.Conn) (tlsPeer string, ok bool) {
 	return "default", true
+}
+
+func traceProxyHeaders(state *proxyv2.ProxyConn) {
+
+	// skip logging health checks from NLB
+	if state.WriteCounter() == 0 {
+		return
+	}
+
+	logrus.WithField("proxy", map[string]interface{}{
+		"source":       state.Info().V4Addr.SourceIP().String(),
+		"destination":  state.Info().V4Addr.DestIP().String(),
+		"bytesRead":    state.ReadCounter(),
+		"bytesWritten": state.WriteCounter(),
+		"TLVs":         fmt.Sprintf("%s", state.Info().TLVs),
+	}).Info("trace connection")
+}
+
+func proxyHeaderError(err error) {
+	logrus.WithField("proxy", map[string]interface{}{
+		"error": err,
+	}).Info("proxy header")
 }
