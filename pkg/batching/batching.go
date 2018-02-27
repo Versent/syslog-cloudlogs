@@ -13,6 +13,7 @@ type DispatchFunc func([]*LogEntry)
 // LogEntry decoded log entry
 type LogEntry struct {
 	Message        string
+	Parts          map[string]interface{}
 	MilliTimestamp int64
 }
 
@@ -48,6 +49,7 @@ func (b *Batcher) Handler(channel syslog.LogPartsChannel) {
 
 			entry := &LogEntry{
 				Message:        logParts["content"].(string),
+				Parts:          logParts,
 				MilliTimestamp: makeMilliTimestamp(logParts["timestamp"].(time.Time)),
 			}
 
