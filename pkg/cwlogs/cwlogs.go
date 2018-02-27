@@ -1,6 +1,7 @@
 package cwlogs
 
 import (
+	"encoding/json"
 	"errors"
 	"regexp"
 	"sync"
@@ -92,8 +93,14 @@ func (d *Dispatcher) Dispatch(entries []*batching.LogEntry) {
 	events := make([]*cloudwatchlogs.InputLogEvent, len(entries))
 
 	for n, entry := range entries {
+		data, err := json.Marshal(entry.Parts)
+		if err != nil {
+			logrus.WithError(err).Error("unable to marshal log entry into json")
+			continue
+		}
+
 		events[n] = &cloudwatchlogs.InputLogEvent{
-			Message:   aws.String(entry.Message),
+			Message:   aws.String(string(data)),
 			Timestamp: aws.Int64(entry.MilliTimestamp),
 		}
 	}
