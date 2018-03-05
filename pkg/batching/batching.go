@@ -47,8 +47,14 @@ func (b *Batcher) Handler(channel syslog.LogPartsChannel) {
 		select {
 		case logParts := <-channel:
 
+			content, ok := logParts["content"].(string)
+
+			if !ok {
+				logrus.WithField("content", logParts["content"]).Warn("missing field in logParts")
+			}
+
 			entry := &LogEntry{
-				Message:        logParts["content"].(string),
+				Message:        content,
 				Parts:          logParts,
 				MilliTimestamp: makeMilliTimestamp(logParts["timestamp"].(time.Time)),
 			}
