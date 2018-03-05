@@ -53,6 +53,8 @@ func (b *Batcher) Handler(channel syslog.LogPartsChannel) {
 				logrus.WithField("content", logParts["content"]).Warn("missing field in logParts")
 			}
 
+			logrus.WithField("logParts", logParts).Debug("received message")
+
 			entry := &LogEntry{
 				Message:        content,
 				Parts:          logParts,
@@ -73,7 +75,7 @@ func (b *Batcher) Handler(channel syslog.LogPartsChannel) {
 			}
 
 		case <-b.flushTimer.C:
-			logrus.Debugf("Batch flushed due to timer - length: %v", len(b.records))
+			// logrus.Debugf("Batch flushed due to timer - length: %v", len(b.records))
 			b.flush()
 		}
 	}

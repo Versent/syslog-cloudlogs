@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"net"
 	"time"
@@ -34,6 +35,10 @@ func main() {
 	err = c.Validate()
 	if err != nil {
 		logrus.Fatal(err.Error())
+	}
+
+	if c.Debug {
+		logrus.SetLevel(logrus.DebugLevel)
 	}
 
 	channel := make(syslog.LogPartsChannel)
@@ -83,7 +88,19 @@ func setupTLSListener(conf *config.SyslogConfig, server *syslog.Server) error {
 		return errors.Wrap(err, "failed to build certs from configuration")
 	}
 
-	config := &tls.Config{Certificates: []tls.Certificate{cert}}
+	caCert, err := conf.ClientCaCertificate()
+	if err != nil {
+		return errors.Wrap(err, "failed to build ca cert from configuration")
+	}
+
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
+	config := &tls.Config{
+		Certificates: []tls.Certificate{cert},        // server certificate which is validated by the client
+		ClientCAs:    caCertPool,                     // used to verify the client cert is signed by the CA and is therefore valid
+		ClientAuth:   tls.RequireAndVerifyClientCert, // this requires a valid client certificate to be supplied during handshake
+	}
 
 	tlsLn := tls.NewListener(ln, config)
 

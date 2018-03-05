@@ -90,23 +90,8 @@ func (d *Dispatcher) Dispatch(entries []*batching.LogEntry) {
 
 	logrus.Info("dispatch")
 
-	events := make([]*cloudwatchlogs.InputLogEvent, len(entries))
-
-	for n, entry := range entries {
-		data, err := json.Marshal(entry.Parts)
-		if err != nil {
-			logrus.WithError(err).Error("unable to marshal log entry into json")
-			continue
-		}
-
-		events[n] = &cloudwatchlogs.InputLogEvent{
-			Message:   aws.String(string(data)),
-			Timestamp: aws.Int64(entry.MilliTimestamp),
-		}
-	}
-
 	params := &cloudwatchlogs.PutLogEventsInput{
-		LogEvents:     events,
+		LogEvents:     d.transformEntriesToEvents(entries),
 		LogGroupName:  aws.String(d.config.Group),
 		LogStreamName: aws.String(d.config.Stream),
 	}
@@ -126,6 +111,26 @@ func (d *Dispatcher) Dispatch(entries []*batching.LogEntry) {
 	d.lock.Unlock()
 
 	logrus.WithField("sequenceToken", d.sequenceToken).Info("cwlogs sequence update")
+}
+
+func (d *Dispatcher) transformEntriesToEvents(entries []*batching.LogEntry) []*cloudwatchlogs.InputLogEvent {
+
+	events := make([]*cloudwatchlogs.InputLogEvent, len(entries))
+
+	for n, entry := range entries {
+		data, err := json.Marshal(entry.Parts)
+		if err != nil {
+			logrus.WithError(err).Error("unable to marshal log entry into json")
+			continue
+		}
+
+		events[n] = &cloudwatchlogs.InputLogEvent{
+			Message:   aws.String(string(data)),
+			Timestamp: aws.Int64(entry.MilliTimestamp),
+		}
+	}
+
+	return events
 }
 
 func (d *Dispatcher) putLogEvents(input *cloudwatchlogs.PutLogEventsInput) (*cloudwatchlogs.PutLogEventsOutput, error) {
