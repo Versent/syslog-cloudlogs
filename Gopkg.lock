@@ -20,6 +20,7 @@
     "aws/request",
     "aws/session",
     "aws/signer/v4",
+    "internal/sdkrand",
     "internal/shareddefaults",
     "private/protocol",
     "private/protocol/json/jsonutil",
@@ -31,8 +32,8 @@
     "service/cloudwatchlogs",
     "service/sts"
   ]
-  revision = "1cb9ce3dbddddab4a70e25ec1a5a60f1647b7e0b"
-  version = "v1.12.51"
+  revision = "aace5875a5c3b85a3902c6d72b9caed301d64cce"
+  version = "v1.13.8"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -81,8 +82,8 @@
     "assert",
     "require"
   ]
-  revision = "69483b4bd14f5845b5a1e55bca19e954e827f1d0"
-  version = "v1.1.4"
+  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
+  version = "v1.2.1"
 
 [[projects]]
   branch = "master"
@@ -98,9 +99,15 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/wolfeidau/proxyv2"
+  packages = ["."]
+  revision = "85deaae9721bface4667daeb54e37dc02178740a"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "d585fd2cc9195196078f516b69daff6744ef5e84"
+  revision = "91a49db82a88618983a78a06c1cbd4e00ab749ab"
 
 [[projects]]
   branch = "master"
@@ -109,17 +116,17 @@
     "unix",
     "windows"
   ]
-  revision = "d818ba11af4465e00c1998bd3f8a55603b422290"
+  revision = "dd2ff4accc098aceecb86b36eaa7829b2a17b1c9"
 
 [[projects]]
   branch = "v2"
   name = "gopkg.in/validator.v2"
   packages = ["."]
-  revision = "460c83432a98c35224a6fe352acf8b23e067ad06"
+  revision = "59c90c7046f643cbe0d4e7c8776c42a84ce75910"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "51cabf3543cf4f4e2ccce520ca395a9ff4cb2bde7a38caf1f13f0a4cac6aabbd"
+  inputs-digest = "1a6409da86b7a55d849f4adfa4c220a8df1724ef91718d8cfe9015aa92821e0d"
   solver-name = "gps-cdcl"
   solver-version = 1

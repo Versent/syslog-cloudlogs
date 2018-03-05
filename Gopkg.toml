@@ -45,5 +45,9 @@
   branch = "master"
 
 [[constraint]]
+  name = "github.com/wolfeidau/proxyv2"
+  branch = "master"
+
+[[constraint]]
   branch = "v2"
   name = "gopkg.in/validator.v2"

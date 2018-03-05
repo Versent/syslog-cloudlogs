@@ -18,21 +18,23 @@ export SYSLOG_PORT=10514
 # cloudwatch group and stream to upload logs
 export SYSLOG_GROUP=/versent/dev/syslog
 export SYSLOG_STREAM=apigee
-# These certs are base64 from the example folder
+# These certs are base64 from the certs folder
+export SYSLOG_CLIENTCACERT=XXX
 export SYSLOG_CERT=XXX
 export SYSLOG_KEY=XXX
 # AWS region
 export AWS_REGION=ap-southeast-2
 # Enable proxy protocol v2 support for NLB
 export SYSLOG_PROXY=true
+# Enable debug level logging
+export SYSLOG_DEBUG=true
 ```
 
 # Generate self-signed certificates
 
 CloudFlare's distributes [cfssl](https://github.com/cloudflare/cfssl) source code on github page and binaries on cfssl website.
 
-Our documentation assumes that you will run cfssl on your local x86_64 Linux or OSX host.
-
+This documentation assumes that you will run cfssl on your local x86_64 Linux or OSX host, that said you can download windows binaries from https://pkg.cfssl.org/.
 
 ```
 curl -s -L -o /usr/local/bin/cfssl https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
@@ -40,35 +42,59 @@ curl -s -L -o /usr/local/bin/cfssljson https://pkg.cfssl.org/R1.2/cfssljson_linu
 chmod +x /usr/local/bin/{cfssl,cfssljson}
 ```
 
-Initialize a certificate authority
-First of all we have to save default cfssl options for future substitutions:
+Navigate to provided CSR files provided.
 
 ```
-mkdir ~/cfssl
-cd ~/cfssl
-cfssl print-defaults config > ca-config.json
-cfssl print-defaults csr > ca-csr.json
+cd certs
+```
+
+Generate the CA certificate and private key.
+
+```
+cfssl gencert -initca ca-csr.json | cfssljson -bare ca
+```
+
+Generate a server cert using the CSR provided.
+
+```
+cfssl gencert  \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -hostname=localhost,127.0.0.1 \
+    -profile=massl server-csr.json | cfssljson -bare server
+```
+
+Generate a client cert using the CSR provided.
+
+```
+cfssl gencert \
+  -ca=ca.pem \
+  -ca-key=ca-key.pem \
+  -config=ca-config.json \
+  -profile=massl \
+  client-csr.json | cfssljson -bare client
 ```
 
 # certificates
 
+Run the following code to produce a string from a PEM encoded certificate, this can then be exported in `SYSLOG_CLIENTCACERT` environment variable.
+
+```
+cat certs/ca.pem | base64 
+```
+
 Run the following code to produce a string from a PEM encoded certificate, this can then be exported in `SYSLOG_CERT` environment variable.
 
 ```
-cat server.crt | base64 
+cat certs/server.pem | base64 
 ```
 
 Run the following code to produce a string from a PEM encoded key, this can then  can be exported in `SYSLOG_KEY` environment variable.
 
 ```
-cat server.key | base64 
+cat certs/server-key.pem | base64 
 ```
-
-# todo
-
-Things which need some work:
-
-* peer certificate verification, this really needs to be explored as a part of testing with apigee
 
 # License
 

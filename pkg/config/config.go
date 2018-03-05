@@ -10,15 +10,16 @@ import (
 
 // SyslogConfig syslog server configuration
 type SyslogConfig struct {
-	Debug   bool
-	Proxy   bool
-	Port    int `validate:"nonzero"`
-	Region  string
-	Profile string
-	Group   string `validate:"nonzero"`
-	Stream  string `validate:"nonzero"`
-	Cert    string `validate:"nonzero"`
-	Key     string `validate:"nonzero"`
+	Debug        bool
+	Proxy        bool
+	Port         int `validate:"nonzero"`
+	Region       string
+	Profile      string
+	Group        string `validate:"nonzero"`
+	Stream       string `validate:"nonzero"`
+	ClientCaCert string `validate:"nonzero"`
+	Cert         string `validate:"nonzero"`
+	Key          string `validate:"nonzero"`
 }
 
 // Validate validate the configuration
@@ -39,4 +40,14 @@ func (sc *SyslogConfig) Certificate() (tls.Certificate, error) {
 	}
 
 	return tls.X509KeyPair(certPEMBlock, keyPEMBlock)
+}
+
+// ClientCaCertificate decode and return the ca certificate
+func (sc *SyslogConfig) ClientCaCertificate() ([]byte, error) {
+	certPEMBlock, err := base64.StdEncoding.DecodeString(sc.ClientCaCert)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to decode ca certificate data from config")
+	}
+
+	return certPEMBlock, nil
 }

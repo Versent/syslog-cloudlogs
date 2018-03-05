@@ -6,3 +6,5 @@ trace.out
 node_modules
 dist
 /syslog-cloudlogs
+*.pem
+*.csr
