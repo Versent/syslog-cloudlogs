@@ -1,18 +1,29 @@
 
-build:
-  main: cmd/syslog-cloudlogs/main.go
-  binary: /syslog-cloudlogs
-  goos:
-    - darwin
-    - linux
-    - windows
-  goarch:
-    - amd64
+builds:
+  - main: cmd/syslog-cloudlogs/main.go
+    binary: /syslog-cloudlogs
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+  - main: cmd/syslog-cloudlogs-test/main.go
+    binary: /syslog-cloudlogs-test
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+
 dockers:
   - image: versent/syslog-cloudlogs
     latest: true
-fpm:
+nfpm:
   homepage: https://github.com/versent/syslog-cloudlogs
+  vendor: Versent
+  description: This service acts as a bridge from syslog to cloud based logging services such as AWS cloudwatch logs.
   license: MIT
   formats:
     - rpm

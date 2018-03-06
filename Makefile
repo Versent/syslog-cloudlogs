@@ -45,3 +45,10 @@ release:
 	@goreleaser -p 1 --rm-dist -config .goreleaser.yml
 	@echo "==> Complete"
 .PHONY: release
+
+# Release binaries to GitHub.
+snapshot:
+	@echo "==> Releasing snapshot"
+	@goreleaser --snapshot --rm-dist --debug -config .goreleaser.yml
+	@echo "==> Complete"
+.PHONY: snapshot

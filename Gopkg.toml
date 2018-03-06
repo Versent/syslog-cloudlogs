@@ -41,6 +41,14 @@
   version = "1.1.4"
 
 [[constraint]]
+  name = "github.com/alecthomas/kingpin"
+  version = "2.2.6"
+
+[[constraint]]
+  name = "github.com/RackSec/srslog"
+  branch = "master"
+
+[[constraint]]
   name = "github.com/wolfeidau/go-syslog"
   branch = "master"
 
