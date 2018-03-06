@@ -22,6 +22,11 @@ const (
 	batchDuration = 250 * time.Millisecond
 )
 
+var (
+	// Version program version which is updated via build flags
+	version = "master"
+)
+
 func main() {
 	var c config.SyslogConfig
 
@@ -40,6 +45,8 @@ func main() {
 	if c.Debug {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
+
+	logrus.WithField("version", version).Info("service starting")
 
 	channel := make(syslog.LogPartsChannel)
 	handler := syslog.NewChannelHandler(channel)
